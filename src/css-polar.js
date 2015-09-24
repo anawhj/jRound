@@ -21,10 +21,16 @@
         var polarElement = document.querySelector(polar_id);
 
         var containingBlock = polarElement.parentNode;
-		var containingBlockWidth = parseFloat(window.getComputedStyle(containingBlock, null).getPropertyValue("width"));
+		var containingBlockSize = {
+			width: parseFloat(window.getComputedStyle(containingBlock, null).getPropertyValue("width")),
+			height: parseFloat(window.getComputedStyle(containingBlock, null).getPropertyValue("height"))
+		};
 
 		if (typeof polarElement.tagName !== 'undefined') {
-			var polarElementWidth = parseFloat(window.getComputedStyle(polarElement, null).getPropertyValue("width"));
+			var polarElementSize = {
+				width: parseFloat(window.getComputedStyle(polarElement, null).getPropertyValue("width")),
+				height: parseFloat(window.getComputedStyle(polarElement, null).getPropertyValue("height"))
+			};
 			if (polarElement.dataset.polarDistance !== undefined) {
 				var polarDistance = polarElement.dataset.polarDistance;
 				if (polarDistance == undefined)
@@ -43,12 +49,12 @@
 				polarAngle = parseFloat(polarAngle);
 
 				if (polarDistance.indexOf("%") > 0) {
-					polarDistance = (containingBlockWidth / 2) * (parseFloat(polarDistance) / 100.0);
+					polarDistance = (containingBlockSize.width / 2) * (parseFloat(polarDistance) / 100.0);
 				} else { // if (polarDistance.indexOf("px") > 0) {
 					polarDistance = parseFloat(polarDistance);
 				}
 
-				var anchorPoint = getAnchorPoint(polarAnchor, containingBlockWidth, polarElementWidth, polarAngle, polarDistance);
+				var anchorPoint = getAnchorPoint(polarAnchor, containingBlockSize, polarElementSize, polarAngle, polarDistance);
 
 				console.log("x: " + anchorPoint.x + " y: " + anchorPoint.y);
 
@@ -59,136 +65,123 @@
 		}
 
     },
-	getAnchorPoint = function(valueString, containingBlockWidth, elementWidth, polarAngle, polarDistance) {
+	calculateAnchorPoint = function(parameter, elementSize, anchorPoint){
+		if (parameter == "center") {
+			anchorPoint.x = elementSize.width/2;
+			anchorPoint.y = elementSize.height/2;
+		} else if (parameter == "top") {
+			anchorPoint.x = elementSize.width/2;
+			anchorPoint.y = 0;
+		} else if (parameter == "bottom") {
+			anchorPoint.x = elementSize.width/2;
+			anchorPoint.y = elementSize.height;
+		} else if (parameter == "left") {
+			anchorPoint.x = 0;
+			anchorPoint.y = elementSize.height/2;
+		} else if (parameter == "right") {
+			anchorPoint.x = elementSize.width;
+			anchorPoint.y = elementSize.height/2;
+		} else {
+			if (parameter.indexOf("%") > 0) {
+				anchorPoint.x = elementSize.width * (parseFloat(parameter) / 100.0);
+				anchorPoint.y = elementSize.height * (parseFloat(parameter) / 100.0);
+			} else if (parameter.indexOf("px") > 0) {
+				anchorPoint.x = parseFloat(parameter);
+				anchorPoint.y = parseFloat(parameter);
+			}
+		}
+	},
+	calculateAnchorPointX = function(edge, value, elementSize, anchorPoint){
+		if (edge == "center") {
+			anchorPoint.x = elementSize.width/2;
+		} else if (edge == "left") {
+			if (value.indexOf("%") > 0) {
+				anchorPoint.x = elementSize.width * (parseFloat(value) / 100.0);
+			} else if (value.indexOf("px") > 0) {
+				anchorPoint.x = parseFloat(value);
+			}
+		} else if (edge == "right") {
+			if (value.indexOf("%") > 0) {
+				anchorPoint.x = elementSize.width * (1 - (parseFloat(value) / 100.0));
+			} else if (value.indexOf("px") > 0) {
+				anchorPoint.x = elementSize.width - parseFloat(value);
+			}
+		}
+	},
+	calculateAnchorPointY = function(edge, value, elementSize, anchorPoint){
+		if (edge == "center") {
+			anchorPoint.y = elementSize.height/2;
+		} else if (edge == "top") {
+			if (value.indexOf("%") > 0) {
+				anchorPoint.y = elementSize.height * (parseFloat(value) / 100.0);
+			} else if (value.indexOf("px") > 0) {
+				anchorPoint.y = parseFloat(value);
+			}
+		} else if (edge == "bottom") {
+			if (value.indexOf("%") > 0) {
+				anchorPoint.y = elementSize.height * (1 - (parseFloat(value) / 100.0));
+			} else if (value.indexOf("px") > 0) {
+				anchorPoint.y = elementSize.height - parseFloat(value);
+			}
+		}
+	},
+	getAnchorPoint = function(valueString, containingBlockSize, elementSize, polarAngle, polarDistance) {
 		var valueList = valueString.split(' ');
 
-		var anchorX, anchorY;
+		var anchorPoint = {};
+
         switch (valueList.length) {
             case 0:
-                anchorX = elementWidth/2;
-				anchorY = elementWidth/2;
+                calculateAnchorPoint("center", elementSize, anchorPoint);
                 break;
             case 1:
-                if (valueList[0] == "center") {
-					anchorX = elementWidth/2;
-					anchorY = elementWidth/2;
-				} else if (valueList[0] == "top") {
-					anchorX = elementWidth/2;
-					anchorY = 0;
-				} else if (valueList[0] == "bottom") {
-					anchorX = elementWidth/2;
-					anchorY = elementWidth;
-				} else if (valueList[0] == "left") {
-					anchorX = 0;
-					anchorY = elementWidth/2;
-				} else if (valueList[0] == "right") {
-					anchorX = elementWidth;
-					anchorY = elementWidth/2;
-				}
+				calculateAnchorPoint(valueList[0], elementSize, anchorPoint);
                 break;
             case 2:
-                if (valueList[0] == "center") {
-					anchorX = elementWidth/2;
-				} else if (valueList[0] == "left") {
-					anchorX = 0;
-				} else if (valueList[0] == "right") {
-					anchorX = elementWidth;
+				if ((valueList[0].indexOf("%") > 0) || (valueList[0].indexOf("px") > 0)) {
+					calculateAnchorPointX("left", valueList[0], elementSize, anchorPoint);
+					calculateAnchorPointY("top", valueList[1], elementSize, anchorPoint);
 				} else {
-					if (valueList[0].indexOf("%") > 0) {
-						anchorX = elementWidth * (parseFloat(valueList[0]) / 100.0);
-					} else if (valueList[0].indexOf("px") > 0) {
-						anchorX = parseFloat(valueList[0]);
-					}
-				}
-
-				if (valueList[1] == "center") {
-					anchorY = elementWidth/2;
-				} else if (valueList[1] == "top") {
-					anchorY = 0;
-				} else if (valueList[1] == "bottom") {
-					anchorY = elementWidth;
-				} else {
-					if (valueList[1].indexOf("%") > 0) {
-						anchorY = elementWidth * (parseFloat(valueList[1]) / 100.0);
-					} else if (valueList[1].indexOf("px") > 0) {
-						anchorY = parseFloat(valueList[1]);
+					if ((valueList[1].indexOf("%") > 0) || (valueList[1].indexOf("px") > 0)) {
+						calculateAnchorPointX(valueList[0], valueList[1], elementSize, anchorPoint);
+						calculateAnchorPointY("center", "0%", elementSize, anchorPoint);
+					} else {
+						calculateAnchorPointX(valueList[0], "0%", elementSize, anchorPoint);
+						calculateAnchorPointY(valueList[1], "0%", elementSize, anchorPoint);
 					}
 				}
                 break;
             case 3:
-				if (valueList[0] == "center") {
-					anchorX = elementWidth/2;
-				} else if (valueList[0] == "left") {
-					anchorX = 0;
-
-					if (valueList[1].indexOf("%") > 0) {
-						anchorX = anchorX +  elementWidth * (parseFloat(valueList[1]) / 100.0);
-					} else if (valueList[1].indexOf("px") > 0) {
-						anchorX = anchorX + parseFloat(valueList[1]);
+				if ((valueList[0].indexOf("%") > 0) || (valueList[0].indexOf("px") > 0)) {
+					calculateAnchorPointX("left", valueList[0], elementSize, anchorPoint);
+					calculateAnchorPointY(valueList[1], valueList[2], elementSize, anchorPoint);
+				} else {
+					if ((valueList[1].indexOf("%") > 0) || (valueList[1].indexOf("px") > 0)) {
+						calculateAnchorPointX("left", valueList[1], elementSize, anchorPoint);
+						if ((valueList[2].indexOf("%") > 0) || (valueList[2].indexOf("px") > 0)) {
+							calculateAnchorPointY("top", valueList[2], elementSize, anchorPoint);
+						} else {
+							calculateAnchorPointY(valueList[2], "0%", elementSize, anchorPoint);
+						}
 					} else {
-
-					}
-				} else if (valueList[0] == "right") {
-					anchorX = elementWidth;
-
-					if (valueList[1].indexOf("%") > 0) {
-						anchorX = anchorX +  elementWidth * (1 - (parseFloat(valueList[1]) / 100.0));
-					} else if (valueList[1].indexOf("px") > 0) {
-						anchorX = anchorX - parseFloat(valueList[1]);
-					} else {
-
+						calculateAnchorPointX(valueList[0], "0%", elementSize, anchorPoint);
+						calculateAnchorPointY(valueList[1], valueList[2], elementSize, anchorPoint);
 					}
 				}
-
                 break;
 			case 4:
-				//for the first value
-                if (valueList[0] == "center") {
-					anchorX = elementWidth/2;
-				} else if (valueList[0] == "left") {
-					anchorX = 0;
+				//for the horizontal value
+				calculateAnchorPointX(valueList[0], valueList[1], elementSize, anchorPoint);
 
-					if (valueList[1].indexOf("%") > 0) {
-						anchorX = anchorX +  elementWidth * (parseFloat(valueList[1]) / 100.0);
-					} else if (valueList[1].indexOf("px") > 0) {
-						anchorX = anchorX + parseFloat(valueList[1]);
-					}
-				} else if (valueList[0] == "right") {
-					anchorX = elementWidth;
+				//for the vertical value
+				calculateAnchorPointY(valueList[2], valueList[3], elementSize, anchorPoint);
 
-					if (valueList[1].indexOf("%") > 0) {
-						anchorX = anchorX +  elementWidth * (1 - (parseFloat(valueList[1]) / 100.0));
-					} else if (valueList[1].indexOf("px") > 0) {
-						anchorX = anchorX - parseFloat(valueList[1]);
-					}
-				}
-
-				//for the second value
-				if (valueList[2] == "center") {
-					anchorY = elementWidth/2;
-				} else if (valueList[2] == "top") {
-					anchorY = 0;
-
-					if (valueList[3].indexOf("%") > 0) {
-						anchorY = anchorY +  elementWidth * (parseFloat(valueList[3]) / 100.0);
-					} else if (valueList[3].indexOf("px") > 0) {
-						anchorY = anchorY + parseFloat(valueList[3]);
-					}
-				} else if (valueList[2] == "bottom") {
-					anchorY = elementWidth;
-
-					if (valueList[3].indexOf("%") > 0) {
-						anchorY = anchorY +  elementWidth * (1 - (parseFloat(valueList[3]) / 100.0));
-					} else if (valueList[3].indexOf("px") > 0) {
-						anchorY = anchorY - parseFloat(valueList[3]);
-					}
-				}
-				break;
+                break;
         }
 
 		var point = {
-			x: Math.sin(Math.PI / 180 * polarAngle) * polarDistance + (containingBlockWidth / 2) - anchorX,
-			y: -Math.cos(Math.PI / 180 * polarAngle) * polarDistance + (containingBlockWidth / 2) - anchorY
+			x: Math.sin(Math.PI / 180 * polarAngle) * polarDistance + (containingBlockSize.width / 2) - anchorPoint.x,
+			y: -Math.cos(Math.PI / 180 * polarAngle) * polarDistance + (containingBlockSize.height / 2) - anchorPoint.y
 		};
 
 		return point;
