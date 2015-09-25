@@ -63,8 +63,24 @@
 				polarElement.style.transform = translate3d;
 			}
 		}
-
     },
+	getAnchorPointByKeyword = function(edge, value, elementSize, anchorPoint){
+		if (edge == "center") {
+			anchorPoint.x = elementSize.width/2;
+		} else if (edge == "left") {
+			if (value.indexOf("%") > 0) {
+				anchorPoint.x = elementSize.width * (parseFloat(value) / 100.0);
+			} else if (value.indexOf("px") > 0) {
+				anchorPoint.x = parseFloat(value);
+			}
+		} else if (edge == "right") {
+			if (value.indexOf("%") > 0) {
+				anchorPoint.x = elementSize.width * (1 - (parseFloat(value) / 100.0));
+			} else if (value.indexOf("px") > 0) {
+				anchorPoint.x = elementSize.width - parseFloat(value);
+			}
+		}
+	},
 	calculateAnchorPoint = function(parameter, elementSize, anchorPoint){
 		if (parameter == "center") {
 			anchorPoint.x = elementSize.width/2;
@@ -130,6 +146,7 @@
 
 		var anchorPoint = {};
 
+		// Reference from 'background-position'
         switch (valueList.length) {
             case 0:
                 calculateAnchorPoint("center", elementSize, anchorPoint);
@@ -139,8 +156,13 @@
                 break;
             case 2:
 				if ((valueList[0].indexOf("%") > 0) || (valueList[0].indexOf("px") > 0)) {
-					calculateAnchorPointX("left", valueList[0], elementSize, anchorPoint);
-					calculateAnchorPointY("top", valueList[1], elementSize, anchorPoint);
+					if ((valueList[1].indexOf("%") > 0) || (valueList[1].indexOf("px") > 0)) {
+						calculateAnchorPointX("left", valueList[0], elementSize, anchorPoint);
+						calculateAnchorPointY("top", valueList[1], elementSize, anchorPoint);
+					} else {
+						calculateAnchorPointX("left", valueList[0], elementSize, anchorPoint);
+						calculateAnchorPointY(valueList[1], "0%", elementSize, anchorPoint);
+					}					
 				} else {
 					if ((valueList[1].indexOf("%") > 0) || (valueList[1].indexOf("px") > 0)) {
 						calculateAnchorPointX(valueList[0], valueList[1], elementSize, anchorPoint);
@@ -157,7 +179,7 @@
 					calculateAnchorPointY(valueList[1], valueList[2], elementSize, anchorPoint);
 				} else {
 					if ((valueList[1].indexOf("%") > 0) || (valueList[1].indexOf("px") > 0)) {
-						calculateAnchorPointX("left", valueList[1], elementSize, anchorPoint);
+						calculateAnchorPointX(valueList[0], valueList[1], elementSize, anchorPoint);
 						if ((valueList[2].indexOf("%") > 0) || (valueList[2].indexOf("px") > 0)) {
 							calculateAnchorPointY("top", valueList[2], elementSize, anchorPoint);
 						} else {
@@ -216,11 +238,7 @@
         }
         jRound = w.jRound;
         jRound.initBorderBoundary = init;
-        jRound.screen = {
-            width: 400,
-            height: 400,
-            radius: [200, 200],
-        };
+      
         init();
     });
 })(this);
