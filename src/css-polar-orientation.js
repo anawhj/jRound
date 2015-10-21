@@ -67,7 +67,7 @@
 					}
 					console.log("orientation");
 				}
-								
+
 				polarElement.style.transform = translate3d;
 			}
 		}
@@ -162,7 +162,7 @@
 					} else {
 						calculateAnchorPointX("left", valueList[0], elementSize, anchorPoint);
 						calculateAnchorPointY(valueList[1], "0%", elementSize, anchorPoint);
-					}					
+					}
 				} else {
 					if ((valueList[1].indexOf("%") > 0) || (valueList[1].indexOf("px") > 0)) {
 						calculateAnchorPointX(valueList[0], valueList[1], elementSize, anchorPoint);
@@ -215,7 +215,7 @@
                 document.querySelector(polarOrientation[i].selector).dataset.polarOrientation = polarOrientation[i].value;
 			}
         }
-	
+
 		var polarAnchor = jRound.getSelectors("polar-anchor", "*");
         for (var i = 0; i < polarAnchor.length; i++) {
             if (document.querySelector(polarAnchor[i].selector)) {
@@ -245,7 +245,7 @@
         }
         jRound = w.jRound;
         jRound.initBorderBoundary = init;
-      
+
         init();
     });
 })(this);
