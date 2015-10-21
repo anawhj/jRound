@@ -1,0 +1,185 @@
+﻿body {
+    margin: 0;
+}
+#cont1{    
+    background: #F6D8CE;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+    border: #F5A9A9 solid 2px;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    font-weight: bold;
+}
+#cont2{    
+    background: #F6D8CE;
+	position: absolute;
+	top: 10px;
+	left: 500px;
+    border: #F5A9A9 solid 2px;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    font-family: 맑은 고딕;
+    font-weight: bold;
+}
+#p1{
+    font-size: 1.3em;
+    color: #F9F9F9;
+	position: absolute;
+	top: 160px;
+	left: 90px;
+}
+#p2{
+    font-size: 1.3em;
+    color: #F9F9F9;
+	position: absolute;
+	top: 160px;
+	left: 600px;
+}
+.box {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background: #B4045F;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    color: white;
+    font-size: 1.5em;
+    color: #FFF;
+}
+#item1 {
+	position: polar;
+    polar-angle: 0deg;
+    polar-distance: 85%;
+}
+#item2 {
+	position: polar;
+    polar-angle: 30deg;
+    polar-distance: 85%;
+}
+#item3 {
+	position: polar;
+    polar-angle: 60deg;
+    polar-distance: 85%;
+}
+#item4 {
+	position: polar;
+    polar-angle: 90deg;
+    polar-distance: 85%;
+}
+#item5 {
+	position: polar;
+    polar-angle: 120deg;
+    polar-distance: 85%;
+}
+#item6 {
+	position: polar;
+    polar-angle: 150deg;
+    polar-distance: 85%;
+}
+#item7 {
+	position: polar;
+    polar-angle: 180deg;
+    polar-distance: 85%;
+}
+#item8 {
+	position: polar;
+    polar-angle: 210deg;
+    polar-distance: 85%;
+}
+#item9 {
+	position: polar;
+    polar-angle: 240deg;
+    polar-distance: 85%;
+}
+#item10 {
+	position: polar;
+    polar-angle: 270deg;
+    polar-distance: 85%;
+}
+#item11 {
+	position: polar;
+    polar-angle: 300deg;
+    polar-distance: 85%;
+}
+#item12 {
+	position: polar;
+    polar-angle: 330deg;
+    polar-distance: 85%;
+}
+#round1 {
+	position: polar;
+    polar-angle: 0deg;
+    polar-distance: 85%;
+	polar-orientation: center;
+}
+#round2 {
+	position: polar;
+    polar-angle: 30deg;
+    polar-distance: 85%;
+	polar-orientation: center;
+}
+#round3 {
+	position: polar;
+    polar-angle: 60deg;
+    polar-distance: 85%;
+	polar-orientation: center;
+}
+#round4 {
+	position: polar;
+    polar-angle: 90deg;
+    polar-distance: 85%;
+	polar-orientation: 0deg;
+}
+#round5 {
+	position: polar;
+    polar-angle: 120deg;
+    polar-distance: 85%;
+	polar-orientation: counter-center;
+}
+#round6 {
+	position: polar;
+    polar-angle: 150deg;
+    polar-distance: 85%;
+	polar-orientation: counter-center;
+}
+#round7 {
+	position: polar;
+    polar-angle: 180deg;
+    polar-distance: 85%;
+	polar-orientation: counter-center;
+}
+#round8 {
+	position: polar;
+    polar-angle: 210deg;
+    polar-distance: 85%;
+	polar-orientation: counter-center;
+}
+#round9 {
+	position: polar;
+    polar-angle: 240deg;
+    polar-distance: 85%;
+	polar-orientation: counter-center;
+}
+#round10 {
+	position: polar;
+    polar-angle: 270deg;
+    polar-distance: 85%;
+	polar-orientation: 0deg;
+}
+#round11 {
+	position: polar;
+    polar-angle: 300deg;
+    polar-distance: 85%;
+	polar-orientation: center;
+}
+#round12 {
+	position: polar;
+    polar-angle: 330deg;
+    polar-distance: 85%;
+	polar-orientation: center;
+}
