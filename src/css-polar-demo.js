@@ -21,126 +21,117 @@
         var polarElement = document.querySelector(polar_id);
 
         var containingBlock = polarElement.parentNode;
-		var containingBlockSize = {
-			width: parseFloat(window.getComputedStyle(containingBlock, null).getPropertyValue("width")),
-			height: parseFloat(window.getComputedStyle(containingBlock, null).getPropertyValue("height"))
-		};
+        var containingBlockSize = {
+            width: parseFloat(window.getComputedStyle(containingBlock, null).getPropertyValue("width")),
+            height: parseFloat(window.getComputedStyle(containingBlock, null).getPropertyValue("height"))
+        };
 
-		if (typeof polarElement.tagName !== 'undefined') {
-			var polarElementSize = {
-				width: parseFloat(window.getComputedStyle(polarElement, null).getPropertyValue("width")),
-				height: parseFloat(window.getComputedStyle(polarElement, null).getPropertyValue("height"))
-			};
-			if (polarElement.dataset.polarDistance !== undefined) {
-				var polarAngle = polarElement.dataset.polarAngle;
-				if (polarAngle == undefined)
-					polarAngle = "0deg";
+        if (typeof polarElement.tagName !== 'undefined') {
+            var polarElementSize = {
+                width: parseFloat(window.getComputedStyle(polarElement, null).getPropertyValue("width")),
+                height: parseFloat(window.getComputedStyle(polarElement, null).getPropertyValue("height"))
+            };
 
-				var polarDistance = polarElement.dataset.polarDistance;
-				if (polarDistance == undefined)
-					polarDistance = "0px";
+            if (polarElement.dataset.polarDistance !== undefined) {
+                var polarAngle = polarElement.dataset.polarAngle;
+                if (polarAngle == undefined)
+                    polarAngle = "0deg";
 
-				var polarOrientation = polarElement.dataset.polarOrientation;
-				if (polarOrientation == undefined)
-					polarOrientation = "0deg";
+                var polarDistance = polarElement.dataset.polarDistance;
+                if (polarDistance == undefined)
+                    polarDistance = "0px";
 
-				// get polar angle value
-				polarAngle = parseFloat(polarAngle);
+                var polarOrientation = polarElement.dataset.polarOrientation;
+                if (polarOrientation == undefined)
+                    polarOrientation = "0deg";
 
-				// get polar orientation value
-				var translate3d;
+                // get polar angle value
+                polarAngle = parseFloat(polarAngle);
 
-				// get polar distance value
-				var distanceValueList = polarDistance.split(' ');
+                // get polar distance value
+                var distanceValueList = polarDistance.split(' ');
 
-				if (distanceValueList[0].indexOf("%") > 0) {
-					distanceValueList[0] = (containingBlockSize.width / 2) * (parseFloat(distanceValueList[0]) / 100.0);
-				} else { // if (distanceValueList[0].indexOf("px") > 0) {
-					distanceValueList[0] = parseFloat(distanceValueList[0]);
-				}
+                if (distanceValueList[0].indexOf("%") > 0) {
+                    distanceValueList[0] = (containingBlockSize.width / 2) * (parseFloat(distanceValueList[0]) / 100.0);
+                } else { // if (distanceValueList[0].indexOf("px") > 0) {
+                    distanceValueList[0] = parseFloat(distanceValueList[0]);
+                }
 
-				var polarAnchor;
-				if (distanceValueList.length == 2) {
-					polarAnchor = distanceValueList[1];
+                // anchor point is decided by polar-distance value
+                var anchorPoint = getAnchor(distanceValueList[1], containingBlockSize, polarElementSize, polarAngle, distanceValueList[0]);
 
-					if (polarAnchor == "fit") {
-						clipElement(containingBlock, containingBlockSize.height, polarElement, polarElementSize, polarAngle, distanceValueList[0], polarOrientation);
-					}
-				} else {
-					polarAnchor = "center";
-				}
+                // get polar orientation value
+                 var translate3d = "translate3d(" + anchorPoint.x + "px, " + anchorPoint.y + "px, 0px)" + setOrientation(polarOrientation, polarAngle);
 
-				// anchor point is decided by polar-distance value
-				var anchorPoint = getAnchor(polarAnchor, containingBlockSize, polarElementSize, polarAngle, distanceValueList[0]);
+                polarElement.style.transform = translate3d;
 
-				translate3d = "translate3d(" + anchorPoint.x + "px, " + anchorPoint.y + "px, 0px)" + setOrientation(polarOrientation, polarAngle);
-
-				polarElement.style.transform = translate3d;
-			}
-		}
+                //clip elements
+                if (polarElement.className == "top-icon" || polarElement.className == "bottom-icon") {
+                    clipElement(containingBlock, containingBlockSize.height, polarElement, polarElementSize, polarAngle, distanceValueList[0], polarOrientation);
+                }
+            }
+        }
     },
+    setOrientation = function(orientation, angle) {
+        var rotationMat;
+        if (orientation.indexOf("deg") > 0) {
+            rotationMat = "rotateZ("+ parseFloat(orientation) +"deg)";
+        } else {
+            if (orientation == "center") {
+                rotationMat = "rotateZ(" + angle + "deg)";
+            } else if (orientation == "counter-center") {
+                rotationMat = "rotateZ(" + (angle+180) + "deg)";
+            }
+        }
+        return rotationMat;
+    },
+    getAnchor = function(valueString, containingBlockSize, elementSize, polarAngle, polarDistance) {
+        var anchorPoint = {};
 
-	setOrientation = function(orientation, angle) {
-		var rotationMat;
-		if (orientation.indexOf("deg") > 0) {
-			rotationMat = "rotateZ("+ parseFloat(orientation) +"deg)";
-		} else {
-			if (orientation == "center") {
-				rotationMat = "rotateZ(" + angle + "deg)";
-			} else if (orientation == "counter-center") {
-				rotationMat = "rotateZ(" + (angle+180) + "deg)";
-			}
-		}
-		return rotationMat;
-	},
-	clipElement = function(containingBlock, diameter, polarElement, size, polarAngle, polarDistance, polarOrientation) {
-		var clipWidth = size.height * size.width / (2 * polarDistance + size.height);
-
-		var clipDeg = clipWidth / size.width * 100;
-
-		if (polarOrientation == "center") {
-			polarElement.style.webkitClipPath = "polygon(0% 0%, 100% 0%, "+(100-clipDeg)+"% 100%, "+clipDeg+"% 100%)";
-			polarElement.style.clipPath = "polygon(0% 0%, 100% 0%, "+(100-clipDeg)+"% 100%, "+clipDeg+"% 100%)";
-		} else if (polarOrientation == "counter-center") {
-			polarElement.style.webkitClipPath = "polygon("+clipDeg+"% 0%, "+(100-clipDeg)+"% 0%, 100% 100%, 0% 100%)";
-			polarElement.style.clipPath = "polygon("+clipDeg+"% 0%, "+(100-clipDeg)+"% 0%, 100% 100%, 0% 100%)";
-		}
-	},
-	getAnchor = function(valueString, containingBlockSize, elementSize, polarAngle, polarDistance) {
-		var anchorPoint = {};
-
-		// options in polar-distance: center | fit
+        // options in polar-distance: center | fit
         switch (valueString) {
             case "center":
                 anchorPoint.x = elementSize.width/2;
-				anchorPoint.y = elementSize.height/2;
-				anchorPoint.dist = polarDistance;
+                anchorPoint.y = elementSize.height/2;
+                anchorPoint.dist = polarDistance;
                 break;
             case "fit":
-				anchorPoint.x = elementSize.width/2;
-				anchorPoint.y = elementSize.height/2;
-				anchorPoint.dist = polarDistance - elementSize.height/2;
+                anchorPoint.x = elementSize.width/2;
+                anchorPoint.y = elementSize.height/2;
+                anchorPoint.dist = polarDistance - elementSize.height/2;
                 break;
-			default:
-				anchorPoint.x = elementSize.width/2;
-				anchorPoint.y = elementSize.height/2;
-				anchorPoint.dist = polarDistance;
+            default:
+                anchorPoint.x = elementSize.width/2;
+                anchorPoint.y = elementSize.height/2;
+                anchorPoint.dist = polarDistance;
                 break;
         }
 
-		var point = {
-			x: Math.sin(Math.PI / 180 * polarAngle) * anchorPoint.dist + (containingBlockSize.width / 2) - anchorPoint.x,
-			y: -Math.cos(Math.PI / 180 * polarAngle) * anchorPoint.dist + (containingBlockSize.height / 2) - anchorPoint.y
-		};
+        var point = {
+            x: Math.sin(Math.PI / 180 * polarAngle) * anchorPoint.dist + (containingBlockSize.width / 2) - anchorPoint.x,
+            y: -Math.cos(Math.PI / 180 * polarAngle) * anchorPoint.dist + (containingBlockSize.height / 2) - anchorPoint.y
+        };
 
-		return point;
+        return point;
+    },
+    clipElement = function(containingBlock, diameter, polarElement, size, polarAngle, polarDistance, polarOrientation) {
+        var clipWidth = size.height * size.width / (2 * polarDistance + size.height);
+        var clipDeg = clipWidth / size.width * 100;
+
+        if (polarOrientation == "center") {
+            polarElement.style.webkitClipPath = "polygon(0% 0%, 100% 0%, "+(100-clipDeg)+"% 100%, "+clipDeg+"% 100%)";
+            polarElement.style.clipPath = "polygon(0% 0%, 100% 0%, "+(100-clipDeg)+"% 100%, "+clipDeg+"% 100%)";
+        } else if (polarOrientation == "counter-center") {
+            polarElement.style.webkitClipPath = "polygon("+clipDeg+"% 0%, "+(100-clipDeg)+"% 0%, 100% 100%, 0% 100%)";
+            polarElement.style.clipPath = "polygon("+clipDeg+"% 0%, "+(100-clipDeg)+"% 0%, 100% 100%, 0% 100%)";
+        }
     },
     init = function() {
-		var polarOrientation = jRound.getSelectors("polar-orientation", "*");
+        var polarOrientation = jRound.getSelectors("polar-orientation", "*");
         for (var i = 0; i < polarOrientation.length; i++) {
             if (document.querySelector(polarOrientation[i].selector)) {
                 document.querySelector(polarOrientation[i].selector).dataset.polarOrientation = polarOrientation[i].value;
-			}
+            }
         }
         var polarDistance = jRound.getSelectors("polar-distance", "*");
         for (var i = 0; i < polarDistance.length; i++) {
@@ -150,7 +141,7 @@
         var polarAngle = jRound.getSelectors("polar-angle", "*");
         for (var i = 0; i < polarAngle.length; i++) {
             if (document.querySelector(polarAngle[i].selector))
-				document.querySelector(polarAngle[i].selector).dataset.polarAngle = polarAngle[i].value;
+                document.querySelector(polarAngle[i].selector).dataset.polarAngle = polarAngle[i].value;
         }
         var idList = jRound.getSelectors("position", "polar");
         for (var i = 0; i < idList.length; i++) {
