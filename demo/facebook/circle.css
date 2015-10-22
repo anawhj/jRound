@@ -92,11 +92,11 @@ body {
     text-align: center;
     font-size: 16px;
     font-family: 'Roboto Regular';
-    color: black;
+    color: #707070;
 }
 .count {
     position: absolute;
-    top: 85%;
+    top: 80%;
     left: 30%;
     padding: 0px 0px;
     margin: 0px 0px;

@@ -122,8 +122,7 @@
             polarElement.style.webkitClipPath = "polygon(0% 0%, 100% 0%, "+(100-clipDeg)+"% 100%, "+clipDeg+"% 100%)";
             polarElement.style.clipPath = "polygon(0% 0%, 100% 0%, "+(100-clipDeg)+"% 100%, "+clipDeg+"% 100%)";
         } else if (polarOrientation == "counter-center") {
-            polarElement.style.webkitClipPath = "polygon("+clipDeg+"% 0%, "+(100-clipDeg)+"% 0%, 100% 100%, 0% 100%)";
-            polarElement.style.clipPath = "polygon("+clipDeg+"% 0%, "+(100-clipDeg)+"% 0%, 100% 100%, 0% 100%)";
+            polarElement.style.webkitClipPath = "polygon(50% 20%, 75% 15%, 88% 10%, 100% 100%, 0 100%, 12% 10%, 25% 15%)";			
         }
     },
     init = function() {
