@@ -63,7 +63,7 @@
                 // get polar orientation value
                  var translate3d = "translate3d(" + anchorPoint.x + "px, " + anchorPoint.y + "px, 0px)" + setOrientation(polarOrientation, polarAngle);
 
-                polarElement.style.transform = translate3d;
+                polarElement.style.webkitTransform = translate3d;
 
                 //clip elements
                 if (polarElement.className == "top-icon" || polarElement.className == "bottom-icon") {
