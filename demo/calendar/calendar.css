@@ -10,7 +10,7 @@ body {
     height: 320px;
     border-radius: 50%;
     overflow: hidden;
-    background-color: #C71585;
+    background-color: DarkMagenta;
     -webkit-clip-path: circle(50% at 50% 50%);
 }
 #today{
@@ -30,8 +30,8 @@ body {
 	position: absolute;
 	position: polar;
     polar-angle: 0deg;
-    polar-distance: 40%;
-	font-size: 30px;
+    polar-distance: 50%;
+	font-size: 35px;
 	font-style: bold;
 	color: white;
 }
@@ -39,8 +39,8 @@ body {
 	position: absolute;
 	position: polar;
     polar-angle: 180deg;
-    polar-distance: 20%;
-	font-size: 20px;
+    polar-distance: 10%;
+	font-size: 25px;
 	color: white;
 }
 #up {
@@ -69,6 +69,27 @@ body {
     text-align: center;
 	color: white;
     font-size: 15px;
+}
+#cursor {
+	position: absolute;
+	position: polar;
+    polar-angle: 280deg;
+    polar-distance: 85%;
+	width: 25px;
+    height: 25px;
+    padding: 0px 0px;
+    margin: 0px 0px;
+	background-color: #7FFFD4;
+	opacity: 0.5;
+	border-radius: 50%;
+}
+#month {
+	position: absolute;
+	position: polar;
+    polar-angle: 360deg;
+    polar-distance: 85%;
+	color: #FFF5EE;
+	font-size: 20px;
 }
 #item1 {
     position: polar;
