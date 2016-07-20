@@ -41,6 +41,13 @@
 				var polarAnchor = polarElement.dataset.polarAnchor;
 				if (polarAnchor == undefined)
 					polarAnchor = "center";
+				var polarOrientation = polarElement.dataset.polarOrientation;
+				if (polarOrientation == undefined)
+					polarOrientation = "0deg";
+					
+				var center = polarElement.dataset.center;
+				if (center == undefined)
+					center = "center";
 
 				console.log("distance: " + polarDistance);
 				console.log("angle: " + polarAngle);
@@ -57,28 +64,30 @@
 				var anchorPoint = getAnchorPoint(polarAnchor, containingBlockSize, polarElementSize, polarAngle, polarDistance);
 
 				console.log("x: " + anchorPoint.x + " y: " + anchorPoint.y);
-
+				
 				var translate3d = "translate3d(" + anchorPoint.x + "px, " + anchorPoint.y + "px, 0px)";
 
+				if (polarOrientation.indexOf("deg") > 0) {
+					translate3d = translate3d + "rotateZ("+ parseFloat(polarOrientation) +"deg)";
+				} else {
+					if (polarOrientation == "center") {
+						translate3d = translate3d + "rotateZ(" + polarAngle + "deg)";
+					} else if (polarOrientation == "counter-center") {
+						translate3d = translate3d + "rotateZ(" + (polarAngle+180) + "deg)";
+					}
+				}
+								
 				polarElement.style.transform = translate3d;
 			}
 		}
     },
-	getAnchorPointByKeyword = function(edge, value, elementSize, anchorPoint){
-		if (edge == "center") {
-			anchorPoint.x = elementSize.width/2;
-		} else if (edge == "left") {
-			if (value.indexOf("%") > 0) {
-				anchorPoint.x = elementSize.width * (parseFloat(value) / 100.0);
-			} else if (value.indexOf("px") > 0) {
-				anchorPoint.x = parseFloat(value);
-			}
-		} else if (edge == "right") {
-			if (value.indexOf("%") > 0) {
-				anchorPoint.x = elementSize.width * (1 - (parseFloat(value) / 100.0));
-			} else if (value.indexOf("px") > 0) {
-				anchorPoint.x = elementSize.width - parseFloat(value);
-			}
+	isNumberType = function(value) {
+		if (value.indexOf("%") > 0) {
+			return "%";
+		} else if (value.indexOf("px") > 0) {
+			return "px";
+		} else {
+			return false;
 		}
 	},
 	calculateAnchorPoint = function(parameter, elementSize, anchorPoint){
@@ -209,6 +218,20 @@
 		return point;
     },
     init = function() {
+		var center = jRound.getSelectors("center", "*");
+        for (var i = 0; i < center.length; i++) {
+            if (document.querySelector(center[i].selector)) {
+                document.querySelector(center[i].selector).dataset.center = center[i].value;
+			}
+        } 
+		
+		var polarOrientation = jRound.getSelectors("polar-orientation", "*");
+        for (var i = 0; i < polarOrientation.length; i++) {
+            if (document.querySelector(polarOrientation[i].selector)) {
+                document.querySelector(polarOrientation[i].selector).dataset.polarOrientation = polarOrientation[i].value;
+			}
+        }
+	
 		var polarAnchor = jRound.getSelectors("polar-anchor", "*");
         for (var i = 0; i < polarAnchor.length; i++) {
             if (document.querySelector(polarAnchor[i].selector)) {
